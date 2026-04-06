@@ -1,0 +1,58 @@
+esphome:
+  name: printer-light-bar
+  friendly_name: Printer Light Bar
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "xxxxxxxxxxxxxxxxxxxxxxx"
+
+ota:
+  - platform: esphome
+    password: "xxxxxxxxxxxxxxxxxxxxxxx"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "xxx"
+    password: "x"
+
+captive_portal:
+    
+# Define the LED strip as an RGB light
+light:
+  - platform: fastled_clockless
+    chipset: WS2812B            # WS2816B is wire-clocked, but most WS281x strips work with this; if yours needs clock+data use neopixelbus instead
+    pin: GPIO16                     # GPIO14 on D1 Mini
+    num_leds: 13
+    name: "LED Strip Light"
+    id: led_strip_light
+    default_transition_length: 0ms
+
+# Create a switch that turns the above light on to bright white or off
+switch:
+  - platform: template
+    name: "LED Strip Switch"
+    id: led_strip_switch
+    optimistic: true            # we assume the action succeeded
+    turn_on_action:
+      - light.turn_on:
+          id: led_strip_light
+          brightness: 100%      # full brightness
+          red: 100%
+          green: 100%
+          blue: 100%
+    turn_off_action:
+      - light.turn_off:
+          id: led_strip_light
