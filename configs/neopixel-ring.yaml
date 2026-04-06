@@ -1,0 +1,52 @@
+esphome:
+  name: neopixel-ring
+  friendly_name: neopixel-ring
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "xxxxxxxxxxxxxxx"
+
+ota:
+  - platform: esphome
+    password: "xxxxxxxxxxxxxxxxxxxx"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: ""
+    password: ""
+  
+light:
+  - platform: esp32_rmt_led_strip
+    name: "Camera Ring"
+    id: cam_ring
+    pin: GPIO2
+    num_leds: 12
+    chipset: WS2812
+    rgb_order: GRB
+    restore_mode: ALWAYS_OFF
+
+switch:
+  - platform: template
+    name: "Camera Ring Switch"
+    turn_on_action:
+      - light.turn_on:
+          id: cam_ring
+          brightness: 40%
+          red: 100%
+          green: 100%
+          blue: 100%
+    turn_off_action:
+      - light.turn_off: cam_ring
